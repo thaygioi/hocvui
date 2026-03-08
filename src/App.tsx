@@ -4,6 +4,9 @@ import { BookOpen, HelpCircle, Pencil, Sparkles, Brain, Music, Palette, Laptop, 
 import { Subject, AppMode, Grade } from './types';
 import { getAIResponse, generateQuiz } from './services/gemini';
 import Markdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 
 const SUBJECTS: { id: Subject; name: string; icon: any; color: string; gradient: string; iconColor: string }[] = [
   { id: 'Math', name: 'Toán học', icon: Brain, color: 'bg-blue-500', gradient: 'from-blue-400 to-blue-600', iconColor: 'text-blue-500' },
@@ -552,6 +555,8 @@ export default function App() {
                 </div>
                     <div className="text-gray-700 leading-relaxed text-base sm:text-lg space-y-3 sm:space-y-4">
                       <Markdown
+                        remarkPlugins={[remarkMath]}
+                        rehypePlugins={[rehypeKatex]}
                         components={{
                           p: ({ children }) => <p className="mb-3 sm:mb-4">{children}</p>,
                           h1: ({ children }) => <h1 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4 text-gray-800">{children}</h1>,
