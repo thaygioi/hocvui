@@ -7,6 +7,7 @@ import Markdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
+import { playCorrectSound, playIncorrectSound, playSuccessSound, playStartSound, playNextQuestionSound } from './utils/sounds';
 
 const SUBJECTS: { id: Subject; name: string; icon: any; color: string; gradient: string; iconColor: string }[] = [
   { id: 'Math', name: 'Toán học', icon: Brain, color: 'bg-blue-500', gradient: 'from-blue-400 to-blue-600', iconColor: 'text-blue-500' },
@@ -128,6 +129,14 @@ export default function App() {
   const [score, setScore] = React.useState(0);
   const [quizFinished, setQuizFinished] = React.useState(false);
 
+  // Phát âm thanh khi hoàn thành quiz
+  React.useEffect(() => {
+    if (quizFinished && quiz) {
+      // playSuccessSound đã được gọi trong handleAnswer, nhưng đảm bảo phát lại khi component render
+      setTimeout(() => playSuccessSound(), 200);
+    }
+  }, [quizFinished, quiz]);
+
   const handleAction = async () => {
     if (!selectedSubject || !mode || !input.trim()) return;
     if (mode === 'quiz' && !selectedGrade) return; // Require grade for quiz
@@ -144,6 +153,8 @@ export default function App() {
         setCurrentQuizIndex(0);
         setScore(0);
         setQuizFinished(false);
+        // Phát âm thanh khi bắt đầu quiz
+        setTimeout(() => playStartSound(), 100);
       } else {
         const res = await getAIResponse(mode, selectedSubject, input);
         setResponse(res);
@@ -157,15 +168,26 @@ export default function App() {
 
   const handleAnswer = (index: number) => {
     if (!quiz) return;
-    if (index === quiz[currentQuizIndex].correctAnswer) {
+    const isCorrect = index === quiz[currentQuizIndex].correctAnswer;
+    
+    // Phát âm thanh dựa trên kết quả
+    if (isCorrect) {
       setScore(s => s + 1);
+      playCorrectSound();
+    } else {
+      playIncorrectSound();
     }
     
-    if (currentQuizIndex + 1 < quiz.length) {
-      setCurrentQuizIndex(i => i + 1);
-    } else {
-      setQuizFinished(true);
-    }
+    // Chuyển câu hỏi hoặc kết thúc quiz
+    setTimeout(() => {
+      if (currentQuizIndex + 1 < quiz.length) {
+        setCurrentQuizIndex(i => i + 1);
+        playNextQuestionSound();
+      } else {
+        setQuizFinished(true);
+        // Âm thanh sẽ được phát trong useEffect khi quizFinished thay đổi
+      }
+    }, isCorrect ? 800 : 600); // Delay để nghe âm thanh
   };
 
   return (
