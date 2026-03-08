@@ -170,15 +170,18 @@ export default function App() {
     if (!quiz) return;
     const isCorrect = index === quiz[currentQuizIndex].correctAnswer;
     
-    // Phát âm thanh dựa trên kết quả
+    // Phát âm thanh ngay lập tức dựa trên kết quả
+    // Đảm bảo AudioContext được khởi tạo và resume
     if (isCorrect) {
       setScore(s => s + 1);
+      // Phát âm thanh đúng ngay lập tức
       playCorrectSound();
     } else {
+      // Phát âm thanh sai ngay lập tức
       playIncorrectSound();
     }
     
-    // Chuyển câu hỏi hoặc kết thúc quiz
+    // Chuyển câu hỏi hoặc kết thúc quiz sau khi phát âm thanh
     setTimeout(() => {
       if (currentQuizIndex + 1 < quiz.length) {
         setCurrentQuizIndex(i => i + 1);
@@ -187,7 +190,7 @@ export default function App() {
         setQuizFinished(true);
         // Âm thanh sẽ được phát trong useEffect khi quizFinished thay đổi
       }
-    }, isCorrect ? 800 : 600); // Delay để nghe âm thanh
+    }, isCorrect ? 1000 : 800); // Delay dài hơn để nghe rõ âm thanh
   };
 
   return (
@@ -709,8 +712,12 @@ export default function App() {
           </AnimatePresence>
       </main>
 
-        <footer className="mt-12 sm:mt-16 md:mt-20 mb-4 sm:mb-6 md:mb-8 text-center text-gray-500 text-xs sm:text-sm px-2">
+        <footer className="mt-12 sm:mt-16 md:mt-20 mb-4 sm:mb-6 md:mb-8 text-center text-gray-500 text-xs sm:text-sm px-2 space-y-2">
           <p className="font-medium">© 2026 Học Vui Mỗi Ngày - Cùng em vươn xa 🌟</p>
+          <div className="pt-2 border-t border-gray-200 space-y-1">
+            <p className="font-semibold text-gray-600">Trường Tiểu học Phúc Ninh</p>
+            <p className="text-gray-500">Thôn Phúc Ninh, Xã Xuân Vân, tỉnh Tuyên Quang</p>
+          </div>
       </footer>
       </div>
     </div>
