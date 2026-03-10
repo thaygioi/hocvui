@@ -1,4 +1,4 @@
-export type Subject = 'Math' | 'Vietnamese' | 'Science' | 'English' | 'History' | 'Geography' | 'Ethics' | 'Music' | 'Arts' | 'PE' | 'Technology' | 'Informatics';
+export type Subject = 'Math' | 'Vietnamese' | 'Science' | 'English' | 'HistoryGeography' | 'Ethics' | 'Music' | 'Arts' | 'PE' | 'Technology' | 'Informatics';
 
 export type Grade = 1 | 2 | 3 | 4 | 5;
 

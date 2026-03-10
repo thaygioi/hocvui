@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { BookOpen, HelpCircle, Pencil, Sparkles, Brain, Music, Palette, Laptop, Settings, Heart, Map, History, Dumbbell, Star, Trophy, CheckCircle2, ArrowLeft } from 'lucide-react';
+import { BookOpen, HelpCircle, Pencil, Sparkles, Brain, Music, Palette, Laptop, Settings, Heart, Map, Dumbbell, Star, Trophy, CheckCircle2, ArrowLeft } from 'lucide-react';
 import { Subject, AppMode, Grade } from './types';
 import { getAIResponse, generateQuiz } from './services/gemini';
 import Markdown from 'react-markdown';
@@ -14,12 +14,11 @@ const SUBJECTS: { id: Subject; name: string; icon: any; color: string; gradient:
   { id: 'Vietnamese', name: 'Tiếng Việt', icon: BookOpen, color: 'bg-orange-500', gradient: 'from-orange-400 to-orange-600', iconColor: 'text-orange-500' },
   { id: 'Science', name: 'Khoa học', icon: Sparkles, color: 'bg-green-500', gradient: 'from-green-400 to-green-600', iconColor: 'text-green-500' },
   { id: 'English', name: 'Tiếng Anh', icon: HelpCircle, color: 'bg-purple-500', gradient: 'from-purple-400 to-purple-600', iconColor: 'text-purple-500' },
-  { id: 'History', name: 'Lịch sử', icon: History, color: 'bg-red-500', gradient: 'from-red-400 to-red-600', iconColor: 'text-red-500' },
-  { id: 'Geography', name: 'Địa lý', icon: Map, color: 'bg-cyan-500', gradient: 'from-cyan-400 to-cyan-600', iconColor: 'text-cyan-500' },
+  { id: 'HistoryGeography', name: 'Lịch sử & Địa lý', icon: Map, color: 'bg-teal-500', gradient: 'from-teal-400 to-teal-600', iconColor: 'text-teal-500' },
   { id: 'Ethics', name: 'Đạo đức', icon: Heart, color: 'bg-pink-500', gradient: 'from-pink-400 to-pink-600', iconColor: 'text-pink-500' },
   { id: 'Music', name: 'Âm nhạc', icon: Music, color: 'bg-indigo-500', gradient: 'from-indigo-400 to-indigo-600', iconColor: 'text-indigo-500' },
   { id: 'Arts', name: 'Mỹ thuật', icon: Palette, color: 'bg-yellow-500', gradient: 'from-yellow-400 to-yellow-600', iconColor: 'text-yellow-500' },
-  { id: 'PE', name: 'Thể dục', icon: Dumbbell, color: 'bg-emerald-500', gradient: 'from-emerald-400 to-emerald-600', iconColor: 'text-emerald-500' },
+  { id: 'PE', name: 'GDTC', icon: Dumbbell, color: 'bg-emerald-500', gradient: 'from-emerald-400 to-emerald-600', iconColor: 'text-emerald-500' },
   { id: 'Technology', name: 'Công nghệ', icon: Settings, color: 'bg-slate-500', gradient: 'from-slate-400 to-slate-600', iconColor: 'text-slate-500' },
   { id: 'Informatics', name: 'Tin học', icon: Laptop, color: 'bg-gray-500', gradient: 'from-gray-400 to-gray-600', iconColor: 'text-gray-500' },
 ];
@@ -59,19 +58,12 @@ const QUIZ_TOPICS: Record<Subject, Record<Grade, string[]>> = {
     4: ['Thì hiện tại đơn', 'Thì hiện tại tiếp diễn', 'Tính từ miêu tả', 'So sánh hơn', 'So sánh nhất', 'Giới từ chỉ vị trí', 'Câu hỏi Wh-', 'Câu phủ định', 'Danh từ số ít, số nhiều', 'Đại từ nhân xưng'],
     5: ['Thì quá khứ đơn', 'Thì tương lai đơn', 'Động từ bất quy tắc', 'Câu điều kiện loại 1', 'Tính từ và trạng từ', 'So sánh bằng', 'Câu bị động đơn giản', 'Câu hỏi đuôi', 'Liên từ', 'Từ vựng theo chủ đề'],
   },
-  History: {
-    1: ['Lịch sử gia đình', 'Ngày lễ trong năm', 'Truyền thống gia đình', 'Đồ vật xưa và nay', 'Công việc của ông bà', 'Trường học xưa', 'Phương tiện đi lại xưa', 'Đồ chơi xưa và nay', 'Thức ăn truyền thống', 'Lễ hội dân gian'],
-    2: ['Lịch sử địa phương', 'Di tích lịch sử', 'Anh hùng dân tộc', 'Chiến thắng lịch sử', 'Văn hóa dân tộc', 'Lễ hội truyền thống', 'Nghề truyền thống', 'Làng quê xưa', 'Thành phố xưa', 'Bảo tàng lịch sử'],
-    3: ['Lịch sử Việt Nam: Thời kỳ dựng nước', 'Các vua Hùng', 'Thời kỳ Bắc thuộc', 'Khởi nghĩa Hai Bà Trưng', 'Thời kỳ độc lập', 'Nhà Lý, nhà Trần', 'Chiến thắng chống quân xâm lược', 'Văn hóa Đại Việt', 'Thương mại xưa', 'Nghệ thuật truyền thống'],
-    4: ['Lịch sử Việt Nam: Nhà Lê', 'Nhà Nguyễn', 'Phong trào kháng chiến', 'Cách mạng tháng Tám', 'Kháng chiến chống Pháp', 'Kháng chiến chống Mỹ', 'Đại tướng Võ Nguyên Giáp', 'Chủ tịch Hồ Chí Minh', 'Thống nhất đất nước', 'Xây dựng đất nước'],
-    5: ['Lịch sử thế giới: Cổ đại', 'Lịch sử thế giới: Trung đại', 'Lịch sử thế giới: Cận đại', 'Các cuộc cách mạng', 'Chiến tranh thế giới', 'Lịch sử Đông Nam Á', 'Lịch sử châu Á', 'Lịch sử châu Âu', 'Lịch sử châu Mỹ', 'Lịch sử hiện đại'],
-  },
-  Geography: {
-    1: ['Địa lý gia đình', 'Nhà em ở đâu', 'Trường học của em', 'Công viên gần nhà', 'Sông, hồ gần nhà', 'Núi, đồi', 'Biển, bãi biển', 'Thành phố và nông thôn', 'Phương tiện đi lại', 'Thời tiết nơi em sống'],
-    2: ['Địa lý địa phương', 'Tỉnh, thành phố', 'Sông ngòi địa phương', 'Núi, đồi địa phương', 'Biển, đảo', 'Khí hậu địa phương', 'Dân cư địa phương', 'Kinh tế địa phương', 'Giao thông địa phương', 'Du lịch địa phương'],
-    3: ['Địa lý Việt Nam: Vị trí địa lý', 'Địa hình Việt Nam', 'Sông ngòi Việt Nam', 'Khí hậu Việt Nam', 'Dân cư Việt Nam', 'Các vùng miền', 'Thành phố lớn', 'Biển và đảo', 'Tài nguyên thiên nhiên', 'Giao thông vận tải'],
-    4: ['Địa lý Việt Nam: Đồng bằng sông Hồng', 'Đồng bằng sông Cửu Long', 'Trung du và miền núi Bắc Bộ', 'Duyên hải miền Trung', 'Tây Nguyên', 'Đông Nam Bộ', 'Biển Đông', 'Đảo và quần đảo', 'Kinh tế các vùng', 'Bảo vệ môi trường'],
-    5: ['Địa lý thế giới: Các châu lục', 'Địa lý châu Á', 'Địa lý châu Âu', 'Địa lý châu Mỹ', 'Địa lý châu Phi', 'Địa lý châu Đại Dương', 'Địa lý châu Nam Cực', 'Đại dương và biển', 'Khí hậu thế giới', 'Dân cư thế giới'],
+  HistoryGeography: {
+    1: ['Lịch sử gia đình', 'Địa lý gia đình', 'Ngày lễ trong năm', 'Nhà em ở đâu', 'Truyền thống gia đình', 'Sông, hồ gần nhà', 'Đồ vật xưa và nay', 'Thành phố và nông thôn', 'Công việc của ông bà', 'Thời tiết nơi em sống', 'Trường học xưa', 'Biển, bãi biển', 'Lễ hội dân gian', 'Phương tiện đi lại'],
+    2: ['Lịch sử địa phương', 'Địa lý địa phương', 'Di tích lịch sử', 'Tỉnh, thành phố', 'Anh hùng dân tộc', 'Sông ngòi địa phương', 'Văn hóa dân tộc', 'Khí hậu địa phương', 'Làng quê xưa', 'Biển, đảo', 'Bảo tàng lịch sử', 'Du lịch địa phương'],
+    3: ['Lịch sử Việt Nam: Thời kỳ dựng nước', 'Địa lý Việt Nam: Vị trí địa lý', 'Các vua Hùng', 'Địa hình Việt Nam', 'Khởi nghĩa Hai Bà Trưng', 'Sông ngòi Việt Nam', 'Nhà Lý, nhà Trần', 'Các vùng miền', 'Văn hóa Đại Việt', 'Biển và đảo', 'Nghệ thuật truyền thống', 'Tài nguyên thiên nhiên'],
+    4: ['Lịch sử Việt Nam: Nhà Lê', 'Địa lý: Đồng bằng sông Hồng', 'Cách mạng tháng Tám', 'Đồng bằng sông Cửu Long', 'Kháng chiến chống Pháp', 'Tây Nguyên', 'Chủ tịch Hồ Chí Minh', 'Đông Nam Bộ', 'Thống nhất đất nước', 'Biển Đông', 'Xây dựng đất nước', 'Bảo vệ môi trường'],
+    5: ['Lịch sử thế giới: Cổ đại', 'Địa lý thế giới: Các châu lục', 'Lịch sử Đông Nam Á', 'Địa lý châu Á', 'Lịch sử châu Âu', 'Địa lý châu Âu', 'Lịch sử hiện đại', 'Khí hậu thế giới', 'Các cuộc cách mạng', 'Dân cư thế giới'],
   },
   Ethics: {
     1: ['Em là ai', 'Gia đình em', 'Bạn bè của em', 'Lễ phép với người lớn', 'Giúp đỡ bạn bè', 'Chăm sóc bản thân', 'Giữ gìn vệ sinh', 'Yêu thương động vật', 'Tiết kiệm', 'Trung thực'],
